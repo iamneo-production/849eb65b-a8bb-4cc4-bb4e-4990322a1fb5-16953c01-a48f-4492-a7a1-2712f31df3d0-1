@@ -1,0 +1,48 @@
+server:
+  port: 8081
+
+spring:      
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      routes:
+      - id: Appointment-Schedular-Service
+        predicates:
+        - Path= /appointments
+        uri: lb://Appointment-Schedular-Service
+        filters:
+           - AuthenticationFilter
+           
+      - id: Appointment-Status-Service
+        predicates:
+        - Path=  /appointments/**
+        uri: lb://Appointment-Status-Service
+        filters:
+           - AuthenticationFilter
+           
+      - id: Communication-Service
+        predicates:
+        - Path=/notifications/**
+        uri: lb://Communication-Service
+        filters:
+           - AuthenticationFilter
+           
+      - id: Payment-Service
+        predicates:
+        - Path= /payments/**
+        uri: lb://Payment-Service
+        filters:
+           - AuthenticationFilter
+           
+      - id: User-Authentication-Service
+        predicates:
+        - Path=  /users/**
+        uri: lb://User-Authentication-Service
+
+eureka:
+  instance:
+    prefer-ip-address:  true
+  client:
+    service-url:
+      defaultZone: http://localhost:8080/eureka
